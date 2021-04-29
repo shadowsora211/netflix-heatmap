@@ -36,6 +36,12 @@ export default {
     historyMap: null,
   }),
 
+  mounted() {
+    if (localStorage.historyMap) {
+      this.historyMap = JSON.parse(localStorage.historyMap);
+    }
+  },
+
   methods: {
     parseFile() {
       parseCSV(this.filename, (data) => {
@@ -51,6 +57,8 @@ export default {
           map[date].push(title);
         }
         this.historyMap = map;
+        // Save
+        localStorage.historyMap = JSON.stringify(this.historyMap);
       }, (msg) => {
         this.$toast.error(msg);
       });
