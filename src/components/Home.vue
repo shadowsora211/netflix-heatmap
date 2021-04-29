@@ -17,6 +17,8 @@
 </template>
 
 <script>
+import { parseCSV } from "../utils/csvutils" 
+
 export default {
   name: "Home",
 
@@ -27,12 +29,9 @@ export default {
 
   methods: {
     parseFile() {
-      var reader = new FileReader();
-      var vm = this;
-      reader.onload = () => {
-        vm.filedata = reader.result;
-      };
-      reader.readAsText(this.filename);
+      parseCSV(this.filename, (data) => {
+        this.filedata = data;
+      });
     },
   },
 };
