@@ -30,9 +30,9 @@
 
     <v-row v-if="historyMap" align="center" justify="center">
       <div>
-        <span class="stats">Daily average: <span class="units">{{ dailyAverage.toString() }} {{ unit }}</span></span>
-        <!-- <span class="stats">Longest streak: <span class="units">{{ 0 }} days</span></span> -->
-        <span class="stats">Current streak: <span class="units">{{ currentStreak.toString() }} days</span></span>
+        <span class="stats">Daily average: <span class="units">{{ dailyAverage.toFixed(1) }} {{ unit }}</span></span>
+        <span class="stats">Longest streak: <span class="units">{{ longestStreak }} days</span></span>
+        <span class="stats">Current streak: <span class="units">{{ currentStreak }} days</span></span>
       </div>
     </v-row>
 
@@ -128,7 +128,7 @@ export default {
     // ref: https://stackoverflow.com/a/58706306/6584553
     currentStreak() {
       let count = 0;
-      // Try steam from today
+      // Try streak from today
       this.dailyCounts.forEach((el, i) => {
         if ((new Date().setUTCHours(0,0,0,0) - new Date(el.date).setUTCHours(0,0,0,0)) === i * 86400000) count++;
       })
@@ -138,6 +138,26 @@ export default {
         if ((new Date().setUTCHours(0,0,0,0) - new Date(el.date).setUTCHours(0,0,0,0)) === (i + 1) * 86400000) count++;
       })
       return count;
+    },
+
+    longestStreak() {
+      let count = 0;
+      var max = 0;
+      var endDate = new Date().setUTCHours(0,0,0,0);
+      var offset = 0;
+      this.dailyCounts.forEach((el, i) => {
+        if ((endDate - new Date(el.date).setUTCHours(0,0,0,0)) === (i - offset) * 86400000) {
+          count++;
+        } else {
+          if (count > max) {
+            max = count;
+          }
+          count = 0;
+          endDate = new Date(el.date).setUTCHours(0,0,0,0);
+          offset = i;
+        }
+      })
+      return max;
     }
   },
 };
