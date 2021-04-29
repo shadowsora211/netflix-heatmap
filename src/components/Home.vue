@@ -28,8 +28,12 @@
     <br>
     <br>
 
-    <v-row v-if="historyMap" justify="center">
-      <div>Daily average: <span class="stats">{{ dailyAverage.toString() }} {{ unit }}</span></div>
+    <v-row v-if="historyMap" align="center" justify="center">
+      <div>
+        <span class="stats">Daily average: <span class="units">{{ dailyAverage.toString() }} {{ unit }}</span></span>
+        <!-- <span class="stats">Longest streak: <span class="units">{{ 0 }} days</span></span> -->
+        <span class="stats">Current streak: <span class="units">{{ currentStreak.toString() }} days</span></span>
+      </div>
     </v-row>
 
   </v-container>
@@ -120,13 +124,31 @@ export default {
       var sum = this.dailyCounts.map((x) => x.count).reduce((a, b) => a + b, 0);
       return sum / this.dailyCounts.length || 0;
     },
+
+    // ref: https://stackoverflow.com/a/58706306/6584553
+    currentStreak() {
+      let count = 0;
+      // Try steam from today
+      this.dailyCounts.forEach((el, i) => {
+        if ((new Date().setUTCHours(0,0,0,0) - new Date(el.date).setUTCHours(0,0,0,0)) === i * 86400000) count++;
+      })
+      if (count > 0) return count;
+      // Otherwise try streak from yesterday
+      this.dailyCounts.forEach((el, i) => {
+        if ((new Date().setUTCHours(0,0,0,0) - new Date(el.date).setUTCHours(0,0,0,0)) === (i + 1) * 86400000) count++;
+      })
+      return count;
+    }
   },
 };
 </script>
 
 <style scoped>
 .stats {
+  margin: 10px;
+}
+.stats .units {
   font-weight: bold;
-  color: var(--v-primary-base);
+  color: var(--v-primary-base); 
 }
 </style>
