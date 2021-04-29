@@ -11,7 +11,12 @@
     </v-row>
 
     <v-row v-if="historyMap" justify="center">
-        <calendar-heatmap :values="dailyCounts" :end-date="getToday()" tooltip-unit="titles" />
+        <h2>{{ currYear }}</h2>
+        <calendar-heatmap :values="dailyCounts" :end-date="maxDate" tooltip-unit="titles" />
+    </v-row>
+    <v-row v-if="historyMap" justify="center">
+      <v-btn @click="currYear -= 1">Prev Year</v-btn>
+      <v-btn @click="currYear += 1" :disabled="nextYearDisabled">Next Year</v-btn>
     </v-row>
 
     <!-- <v-row style="white-space: pre">
@@ -34,12 +39,15 @@ export default {
   data: () => ({
     filename: null,
     historyMap: null,
+    currYear: null
   }),
 
   mounted() {
     if (localStorage.historyMap) {
       this.historyMap = JSON.parse(localStorage.historyMap);
     }
+
+    this.currYear = this.getCurrYear();
   },
 
   methods: {
@@ -69,9 +77,9 @@ export default {
       return parts[2] + "-" + parts[1] + "-" + parts[0];
     },
 
-    getToday() {
-      var currentDate = new Date()
-      return currentDate.getFullYear() + "-" + (currentDate.getMonth() + 1) + "-" + currentDate.getDate();  
+    getCurrYear() {
+      var today = new Date();
+      return today.getFullYear();
     }
   },
 
@@ -84,6 +92,14 @@ export default {
         counts.push({ date: this.formatDate(dates[i]), count: this.historyMap[dates[i]].length });
       }
       return counts;
+    },
+
+    maxDate: function() {
+      return this.currYear + "-12-31";
+    },
+
+    nextYearDisabled: function() {
+      return this.currYear == this.getCurrYear();
     }
   }
 };
