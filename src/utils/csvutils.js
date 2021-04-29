@@ -1,14 +1,18 @@
-export function parseCSV(fileInfo, successCallback) {
+export function parseCSV(fileInfo, successCallback, failureCallback) {
     var reader = new FileReader();
     reader.onload = () => {
         var csvString = reader.result;
         var csvArray = CSVToArray(csvString);
-        // TO DO: validation
-        successCallback(csvArray);
+        // Validation
+        if (csvArray[0][0] == "Title" && csvArray[0][1] == "Date")
+            successCallback(csvArray);
+        else {
+            var msg = "File in the wrong format";
+            failureCallback(msg);
+        }
     };
     reader.readAsText(fileInfo);
 }
-
 
 // ref: https://gist.github.com/Jezternz/c8e9fafc2c114e079829974e3764db75
 function CSVToArray(strData) {

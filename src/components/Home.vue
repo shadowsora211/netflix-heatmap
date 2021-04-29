@@ -31,6 +31,9 @@ export default {
     parseFile() {
       parseCSV(this.filename, (data) => {
         this.filedata = data;
+        this.$toast.success("File uploaded!");
+      }, (msg) => {
+        this.$toast.error(msg);
       });
     },
   },
