@@ -23,6 +23,7 @@
         :end-date="maxDate"
         :tooltip-unit="unit"
         :max="settings.maxDays"
+        @day-click="dayClick"
       />
     </v-row>
     <v-row v-if="historyMap" justify="center">
@@ -46,17 +47,26 @@
     <br>
     <br>
 
-    <div v-if="historyMap" align="center" justify="center">
-      <h2>Settings</h2>
-      <br>
-      <v-row align="center" justify="center">
-        <v-text-field class="inputbox" label="Max colour threshold" v-model="input.maxDays" type="number" clearable />
-      </v-row>
-      <v-row align="center" justify="center">
-        <v-text-field class="inputbox" label="Daily average start" v-model="input.minAvgDate" type="date" clearable />
-      </v-row>
-      <v-btn @click="updateSettings">Update</v-btn>
-    </div>
+    <v-row>
+      <v-col v-if="dayList" align="center" justify="center">
+        <h2>{{ currDay }}</h2>
+        <v-list>
+          <v-list-item v-for="title in dayList" :key="title">{{ title }}</v-list-item>
+        </v-list>
+      </v-col>
+
+      <v-col v-if="historyMap" align="center" justify="center">
+        <h2>Settings</h2>
+        <br>
+        <v-row align="center" justify="center">
+          <v-text-field class="inputbox" label="Max colour threshold" v-model="input.maxDays" type="number" clearable />
+        </v-row>
+        <v-row align="center" justify="center">
+          <v-text-field class="inputbox" label="Daily average start" v-model="input.minAvgDate" type="date" clearable />
+        </v-row>
+        <v-btn @click="updateSettings">Update</v-btn>
+      </v-col>
+    </v-row>
 
   </v-container>
 </template>
@@ -80,6 +90,8 @@ export default {
       maxDays: null,
       minAvgDate: null
     },
+    dayList: null,
+    currDay: null
   }),
 
   mounted() {
@@ -142,7 +154,16 @@ export default {
 
     addDropFile(e) {
       this.filename = e.dataTransfer.files[0];
-    }
+    },
+
+    dayClick(e) {
+      // Show what was watched on clicked day
+      // TO DO: make date not dependant on region
+      var dateFormatted = ("0" + e.date.getDate()).slice(-2) + "/" +
+        ("0" + (e.date.getMonth() + 1)).slice(-2) + "/" + e.date.getFullYear();
+      this.dayList = this.historyMap[dateFormatted];
+      this.currDay = dateFormatted;
+    },
   },
 
   computed: {
