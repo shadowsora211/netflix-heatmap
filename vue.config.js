@@ -1,7 +1,9 @@
 module.exports = {
-    publicPath: '/netflix-heatmap/',
+  publicPath: '/netflix-heatmap/',
 
-    transpileDependencies: [
-      'vuetify'
-    ]
+  transpileDependencies: [
+    'vuetify'
+  ],
+
+
 }
