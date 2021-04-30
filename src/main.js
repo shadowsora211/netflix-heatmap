@@ -9,8 +9,7 @@ import 'vue-calendar-heatmap/dist/vue-calendar-heatmap.css'
 Vue.config.productionTip = false
 
 Vue.use(VueToast);
-Vue.use(VueCalendarHeatmap)
-
+Vue.use(VueCalendarHeatmap);
 
 new Vue({
   vuetify,

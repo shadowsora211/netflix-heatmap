@@ -3,7 +3,9 @@
     <v-row justify="center">
       <v-col cols="12">
         Upload a viewing history CSV <a href="https://www.netflix.com/settings/viewed/" target="_blank" rel="noopener noreferrer">from Netflix</a>
-        <v-file-input v-model="filename" accept=".csv"></v-file-input>
+        <div v-cloak @drop.prevent="addDropFile" @dragover.prevent>
+          <v-file-input v-model="filename" accept=".csv" label="Click or drag file"></v-file-input>
+        </div>
         <v-btn color="primary" :disabled="!filename" @click="parseFile"
           >Upload</v-btn
         >
@@ -136,6 +138,10 @@ export default {
       // Save settings
       localStorage.settings = JSON.stringify(this.settings);
       this.$toast.success("Settings updated!");
+    },
+
+    addDropFile(e) {
+      this.filename = e.dataTransfer.files[0];
     }
   },
 
