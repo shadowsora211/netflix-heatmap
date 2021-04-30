@@ -143,16 +143,17 @@ export default {
     longestStreak() {
       let count = 0;
       var max = 0;
-      var endDate = new Date().setUTCHours(0,0,0,0);
+      var endDate = new Date(this.dailyCounts[0].date).setUTCHours(0,0,0,0);
       var offset = 0;
       this.dailyCounts.forEach((el, i) => {
         if ((endDate - new Date(el.date).setUTCHours(0,0,0,0)) === (i - offset) * 86400000) {
           count++;
         } else {
+          // If this date is not part of the streak, reset the streak counting
           if (count > max) {
             max = count;
           }
-          count = 0;
+          count = 1;
           endDate = new Date(el.date).setUTCHours(0,0,0,0);
           offset = i;
         }
