@@ -16,7 +16,7 @@
         :values="dailyCounts"
         :end-date="maxDate"
         :tooltip-unit="unit"
-        :max="maxDays"
+        :max="settings.maxDays"
       />
     </v-row>
     <v-row v-if="historyMap" justify="center">
@@ -40,10 +40,17 @@
     <br>
     <br>
 
-    <v-row align="center" justify="center">
-      <v-text-field class="inputbox" label="Max colour threshold" v-model="maxDaysInput" type="number" clearable />
-      <v-btn @click="updatedMaxDays">Update</v-btn>
-    </v-row>
+    <div v-if="historyMap" align="center" justify="center">
+      <h2>Settings</h2>
+      <br>
+      <v-row align="center" justify="center">
+        <v-text-field class="inputbox" label="Max colour threshold" v-model="input.maxDays" type="number" clearable />
+      </v-row>
+      <v-row align="center" justify="center">
+        <v-text-field class="inputbox" label="Daily average start" v-model="input.minAvgDate" type="date" clearable />
+      </v-row>
+      <v-btn @click="updateSettings">Update</v-btn>
+    </div>
 
   </v-container>
 </template>
@@ -59,17 +66,24 @@ export default {
     historyMap: null,
     currYear: null,
     unit: "titles",
-    maxDays: null,
-    maxDaysInput: null
+    settings: {
+      maxDays: null,
+      minAvgDate: null
+    },
+    input: {
+      maxDays: null,
+      minAvgDate: null
+    },
   }),
 
   mounted() {
     if (localStorage.historyMap) {
       this.historyMap = JSON.parse(localStorage.historyMap);
     }
-    if (localStorage.maxDays) {
-      this.maxDays = parseInt(localStorage.maxDays);
-      this.maxDaysInput = localStorage.maxDays;
+    if (localStorage.settings) {
+      // Load settings and input form
+      this.settings = JSON.parse(localStorage.settings);
+      this.input = JSON.parse(localStorage.settings);
     }
 
     this.currYear = this.getCurrYear();
@@ -112,9 +126,12 @@ export default {
       return today.getFullYear();
     },
 
-    updatedMaxDays() {
-      this.maxDays = parseInt(this.maxDaysInput);
-      localStorage.maxDays = this.maxDays;
+    updateSettings() {
+      this.settings.maxDays = parseInt(this.input.maxDays);
+      this.settings.minAvgDate = this.input.minAvgDate;
+      // Save settings
+      localStorage.settings = JSON.stringify(this.settings);
+      this.$toast.success("Settings updated!");
     }
   },
 
@@ -141,8 +158,9 @@ export default {
     },
 
     dailyAverage: function () {
-      var sum = this.dailyCounts.map((x) => x.count).reduce((a, b) => a + b, 0);
-      return sum / this.dailyCounts.length || 0;
+      var _dailyCounts = this.settings.minAvgDate ? this.dailyCounts.filter(x => new Date(x.date) > new Date(this.settings.minAvgDate)) : this.dailyCounts;
+      var sum = _dailyCounts.map((x) => x.count).reduce((a, b) => a + b, 0);
+      return sum / _dailyCounts.length || 0;
     },
 
     // ref: https://stackoverflow.com/a/58706306/6584553
@@ -194,7 +212,6 @@ export default {
 }
 
 .inputbox {
-  max-width: 200px;
-  margin-right: 10px;
+  max-width: 400px;
 }
 </style>
