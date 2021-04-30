@@ -16,6 +16,7 @@
         :values="dailyCounts"
         :end-date="maxDate"
         :tooltip-unit="unit"
+        :max="maxDays"
       />
     </v-row>
     <v-row v-if="historyMap" justify="center">
@@ -36,6 +37,14 @@
       </div>
     </v-row>
 
+    <br>
+    <br>
+
+    <v-row align="center" justify="center">
+      <v-text-field class="inputbox" label="Max colour threshold" v-model="maxDaysInput" type="number" clearable />
+      <v-btn @click="updatedMaxDays">Update</v-btn>
+    </v-row>
+
   </v-container>
 </template>
 
@@ -50,11 +59,17 @@ export default {
     historyMap: null,
     currYear: null,
     unit: "titles",
+    maxDays: null,
+    maxDaysInput: null
   }),
 
   mounted() {
     if (localStorage.historyMap) {
       this.historyMap = JSON.parse(localStorage.historyMap);
+    }
+    if (localStorage.maxDays) {
+      this.maxDays = parseInt(localStorage.maxDays);
+      this.maxDaysInput = localStorage.maxDays;
     }
 
     this.currYear = this.getCurrYear();
@@ -96,6 +111,11 @@ export default {
       var today = new Date();
       return today.getFullYear();
     },
+
+    updatedMaxDays() {
+      this.maxDays = parseInt(this.maxDaysInput);
+      localStorage.maxDays = this.maxDays;
+    }
   },
 
   computed: {
@@ -171,5 +191,10 @@ export default {
 .stats .units {
   font-weight: bold;
   color: var(--v-primary-base); 
+}
+
+.inputbox {
+  max-width: 200px;
+  margin-right: 10px;
 }
 </style>
